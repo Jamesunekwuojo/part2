@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import axios from 'axios';
-
+import axios from "axios";
+import personService from "./services/person";
+import person from "./services/person";
 
 // Filter component for search input
 const Filter = ({ searchTerm, handleFilter }) => {
@@ -15,14 +16,15 @@ const Filter = ({ searchTerm, handleFilter }) => {
 };
 
 // Component to render all filtered persons
-const Person = ({ filteredPersons }) => {
+const Person = ({ filteredPersons, handleDelete }) => {
   return (
     <>
       <div>
         {filteredPersons.map((person) => (
-          <p key={person.id}>
+          <li key={person.id}>
             {person.name} {person.number}
-          </p>
+            <button onClick={() => handleDelete(person.id)}>delete</button>
+          </li>
         ))}
       </div>
     </>
@@ -55,11 +57,6 @@ const PersonForm = ({
     </>
   );
 };
-
-
-
-
-
 
 // main app component
 const App = () => {
@@ -114,18 +111,30 @@ const App = () => {
 
   // useffect hook for fetching data fro server
 
-  useEffect(()=> {
-
-    axios.get('http://localhost:3001/persons')
-    .then((response)=> {
-  
-      console.log("Data received successfully from json server", response.data);
-      setPersons(response.data)
-  
-  
-    })
-  
+  useEffect(() => {
+    personService.getPersons().then((initalPersons) => {
+      console.log(initalPersons);
+      setPersons(initalPersons);
+    });
   }, []);
+
+  const handleDelete = (id) => {
+    const person = persons.find(p => p.id ===id)
+    // const changedPersons = {...person,}
+    // setPersons(persons.filter((person) => person.id !== idToDelete));
+    if (window.confirm(`Delete ${person.name}?`)) {
+      personService
+      .deletePerson(id)
+      .then(() => {
+        setPersons(persons.filter((p) => p.id !==id));
+      })
+      .catch((error) => {
+
+        setPersons(persons.filter((p) => p.id !== id));
+
+      })
+    }
+  };
 
   return (
     <div>
@@ -147,7 +156,7 @@ const App = () => {
       <h2>Numbers</h2>
 
       {/* Render filtered persons */}
-      <Person filteredPersons={filteredPersons} />
+      <Person filteredPersons={filteredPersons} handleDelete={handleDelete}/>
     </div>
   );
 };
