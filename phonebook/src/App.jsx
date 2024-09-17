@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from 'axios';
+
 
 // Filter component for search input
 const Filter = ({ searchTerm, handleFilter }) => {
@@ -55,6 +57,10 @@ const PersonForm = ({
 };
 
 
+
+
+
+
 // main app component
 const App = () => {
   const [persons, setPersons] = useState([
@@ -105,6 +111,21 @@ const App = () => {
       setNewNumber(""); // to Reset number input field
     }
   };
+
+  // useffect hook for fetching data fro server
+
+  useEffect(()=> {
+
+    axios.get('http://localhost:3001/persons')
+    .then((response)=> {
+  
+      console.log("Data received successfully from json server", response.data);
+      setPersons(response.data)
+  
+  
+    })
+  
+  }, []);
 
   return (
     <div>
