@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import personService from "./services/person";
-import person from "./services/person";
+
 
 // Filter component for search input
 const Filter = ({ searchTerm, handleFilter }) => {
@@ -91,22 +91,54 @@ const App = () => {
     person.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // handle update function
+  const handleupdatedPerson = (id, updatedPerson) => {
+
+    personService
+    .updatePerson(id, updatedPerson)
+    .then(returnedPerson => {
+      setPersons(persons.map(person => (person.id !== id? person: returnedPerson)))
+
+      setNewName('');
+      setNewNumber('');
+    })
+    .catch(error=> {
+      alert(`Errror updating  ${updatedPerson.name} ${updatedPerson.number}`)
+      console.log(error)
+    })
+  }
+
   const handleAddperson = (e) => {
     e.preventDefault();
 
-    const newPerson = {
-      name: newName,
-      number: newNumber,
-      id: persons.length + 1, // to Ensure each person gets a unique id
-    };
+    const personExists = persons.find(person => person.name ===newName);
 
-    if (persons.some((person) => person.name === newName)) {
-      alert(`${newName} is already added to the phonebook`);
+    if(personExists){
+      if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+        const updatedPerson = {...personExists, number:newNumber} 
+
+        handleupdatedPerson(personExists.id, updatedPerson);
+      }
+       
     } else {
-      setPersons(persons.concat(newPerson));
-      setNewName(""); // to  Reset name input field
-      setNewNumber(""); // to Reset number input field
+
+      const newPerson = {
+        name: newName,
+        number: newNumber,
+        id: persons.length + 1, // to Ensure each person gets a unique id
+      };
+  
+      if (persons.some((person) => person.name === newName)) {
+        alert(`${newName} is already added to the phonebook`);
+      } else {
+        setPersons(persons.concat(newPerson));
+        setNewName(""); // to  Reset name input field
+        setNewNumber(""); // to Reset number input field
+      }
+      
     }
+
+   
   };
 
   // useffect hook for fetching data fro server
