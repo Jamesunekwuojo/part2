@@ -1,7 +1,10 @@
 import axios from 'axios';
 const baseUrl = 'http://localhost:3001/persons'
 
-
+// const createPerson = () => {
+//     const request = axios.post(baseUrl)
+//     return request.then (response => response.data)
+// }
 
 const getPersons = () => {
   
@@ -28,12 +31,10 @@ const updatePerson = (id, updatedPerson) => {
 
 }
 
-const createPerson = () => {
 
-} 
 
 
 
 export default {
-    getPersons, deletePerson, updatePerson, createPerson 
+    getPersons, deletePerson, updatePerson
 }

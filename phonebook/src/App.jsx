@@ -58,18 +58,43 @@ const PersonForm = ({
   );
 };
 
+// notification
+
+const Notification = ({message}) => {
+
+  if(message === null){
+    return null
+
+  } else if(message ===`Added ${newName}` ) {
+    return(
+      
+    )
+
+  }
+
+  return(
+    <div className="error">
+      {message}
+
+    </div>
+  )
+
+}
+
 // main app component
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: "Arto Hellas", number: "040-1234567", id: 1 },
-    { name: "Ada Lovelace", number: "39-44-5323523", id: 2 },
-    { name: "Dan Abramov", number: "12-43-234345", id: 3 },
-    { name: "Mary Poppendieck", number: "39-23-6423122", id: 4 },
-  ]);
-
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [searchTerm, setSearchTerm] = useState(""); // to hold or store the current value of the items being searched
+  const [errorMessage, setErrorMessage]=useState('some errror happened..')
+
+  const [persons, setPersons] = useState([
+
+
+  ]);
+
+ 
+
 
   // Handle name input change
   const handleNameChange = (e) => {
@@ -108,6 +133,7 @@ const App = () => {
     })
   }
 
+
   const handleAddperson = (e) => {
     e.preventDefault();
 
@@ -131,6 +157,7 @@ const App = () => {
       if (persons.some((person) => person.name === newName)) {
         alert(`${newName} is already added to the phonebook`);
       } else {
+       
         setPersons(persons.concat(newPerson));
         setNewName(""); // to  Reset name input field
         setNewNumber(""); // to Reset number input field
@@ -171,6 +198,9 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      {/* Notification */}
+      <Notification message={errorMessage}/>
+
       {/* Search field */}
       <Filter searchTerm={searchTerm} handleFilter={handleFilter} />
 
