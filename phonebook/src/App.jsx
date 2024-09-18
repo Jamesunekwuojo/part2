@@ -60,33 +60,33 @@ const PersonForm = ({
 
 // notification
 
-const Notification = ({message}) => {
+const Notification = ({ message }) => {
+  console.log(message)
+  
 
-  if(message === null){
-    return null
 
-  } else if(message ===`Added ${newName}` ) {
-    return(
-      
-    )
-
+  if (message === null) {
+    return null;
   }
 
-  return(
-    <div className="error">
+  // Conditionally apply success or error class
+  
+  const isSuccess = message.startsWith('Added') || message.startsWith('updated');
+
+  return (
+    <div className={isSuccess ? "success" : "error"}>
       {message}
-
     </div>
-  )
+  );
+};
 
-}
 
 // main app component
 const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [searchTerm, setSearchTerm] = useState(""); // to hold or store the current value of the items being searched
-  const [errorMessage, setErrorMessage]=useState('some errror happened..')
+  const [errorMessage, setErrorMessage]=useState(null)
 
   const [persons, setPersons] = useState([
 
@@ -126,10 +126,28 @@ const App = () => {
 
       setNewName('');
       setNewNumber('');
+      setErrorMessage(`updated ${updatedPerson.name} number successfully`)
+
+      setTimeout(()=>{
+        setErrorMessage(null)
+      }, 5000);
+
+
+
+    
+
     })
     .catch(error=> {
-      alert(`Errror updating  ${updatedPerson.name} ${updatedPerson.number}`)
-      console.log(error)
+
+      if(error.response && error.response.status === 404) {
+        setErrorMessage(`${updatedPerson.name} has already been deleted`)
+        setPersons(persons.filter((p) => p.id !== id));
+
+      } else {
+        setErrorMessage(`Error updated ${updatedPerson.name}`)
+      }
+    
+   
     })
   }
 
@@ -139,11 +157,18 @@ const App = () => {
 
     const personExists = persons.find(person => person.name ===newName);
 
+
     if(personExists){
       if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
         const updatedPerson = {...personExists, number:newNumber} 
 
         handleupdatedPerson(personExists.id, updatedPerson);
+        // setErrorMessage(`updated ${personExists.name} number successfully `)
+
+        setTimeout(() =>{
+          setErrorMessage(null)
+
+        }, 5000)
       }
        
     } else {
@@ -151,17 +176,47 @@ const App = () => {
       const newPerson = {
         name: newName,
         number: newNumber,
-        id: persons.length + 1, // to Ensure each person gets a unique id
+        // id: persons.length + 1, // to Ensure each person gets a unique id
       };
+
+      personService
+      .createPerson(newPerson)
+      .then((returnedPerson) => {
+        setPersons(persons.concat(returnedPerson));
+        setNewName("");
+        setNewNumber("");
+        setErrorMessage(`Added ${newPerson.name}`);
+
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+      }).catch((error) => {
+        alert(`${newPerson.name}is already added to the phonebook`)
+        console.log(error)
+      })
+
+
+    
+
+      
+
+
+      
   
-      if (persons.some((person) => person.name === newName)) {
-        alert(`${newName} is already added to the phonebook`);
-      } else {
+      // if (persons.some((person) => person.name === newName)) {
+      //   alert(`${newName} is already added to the phonebook`);
+      // } else {
        
-        setPersons(persons.concat(newPerson));
-        setNewName(""); // to  Reset name input field
-        setNewNumber(""); // to Reset number input field
-      }
+      //   setPersons(persons.concat(newPerson));
+      //   setNewName(""); // to  Reset name input field
+      //   setNewNumber(""); // to Reset number input field
+      //   setErrorMessage(`Added ${newName}`)
+
+      //   setTimeout(() => {
+      //     setErrorMessage(null)
+          
+      //   }, 5000);
+      // }
       
     }
 
@@ -179,17 +234,25 @@ const App = () => {
 
   const handleDelete = (id) => {
     const person = persons.find(p => p.id ===id)
-    // const changedPersons = {...person,}
-    // setPersons(persons.filter((person) => person.id !== idToDelete));
+ 
     if (window.confirm(`Delete ${person.name}?`)) {
       personService
       .deletePerson(id)
       .then(() => {
         setPersons(persons.filter((p) => p.id !==id));
+
       })
       .catch((error) => {
 
         setPersons(persons.filter((p) => p.id !== id));
+        alert("Error deleting")
+       
+
+        // setTimeout(() => {
+
+        //   setErrorMessage(null)
+
+        // }, 5000)
 
       })
     }
@@ -199,7 +262,7 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
       {/* Notification */}
-      <Notification message={errorMessage}/>
+      <Notification  message={errorMessage}/>
 
       {/* Search field */}
       <Filter searchTerm={searchTerm} handleFilter={handleFilter} />
