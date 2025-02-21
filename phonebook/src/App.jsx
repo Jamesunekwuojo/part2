@@ -42,11 +42,11 @@ const PersonForm = ({
     <>
       <form onSubmit={handleAddperson}>
         <div>
-          name: <input value={newName} onChange={handleNameChange} />
+          name: <input name="name" value={newName} onChange={handleNameChange} />
         </div>
 
         <div>
-          number: <input value={newNumber} onChange={handleNumberChange} />
+          number: <input name="number" value={newNumber} onChange={handleNumberChange} />
         </div>
 
         <div>
