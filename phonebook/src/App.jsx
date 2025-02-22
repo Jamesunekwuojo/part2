@@ -266,7 +266,7 @@ const App = () => {
       {/* Search field */}
       <Filter searchTerm={searchTerm} handleFilter={handleFilter} />
 
-      <h2>add a new</h2>
+      <h2>add  new</h2>
 
       {/* Form to add a new person */}
       <PersonForm
