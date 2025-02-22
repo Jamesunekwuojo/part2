@@ -202,20 +202,7 @@ const App = () => {
 
       
   
-      // if (persons.some((person) => person.name === newName)) {
-      //   alert(`${newName} is already added to the phonebook`);
-      // } else {
-       
-      //   setPersons(persons.concat(newPerson));
-      //   setNewName(""); // to  Reset name input field
-      //   setNewNumber(""); // to Reset number input field
-      //   setErrorMessage(`Added ${newName}`)
-
-      //   setTimeout(() => {
-      //     setErrorMessage(null)
-          
-      //   }, 5000);
-      // }
+      
       
     }
 
@@ -247,11 +234,6 @@ const App = () => {
         alert("Error deleting")
        
 
-        // setTimeout(() => {
-
-        //   setErrorMessage(null)
-
-        // }, 5000)
 
       })
     }
@@ -266,7 +248,7 @@ const App = () => {
       {/* Search field */}
       <Filter searchTerm={searchTerm} handleFilter={handleFilter} />
 
-      <h2>add  new</h2>
+      <h2>add a new</h2>
 
       {/* Form to add a new person */}
       <PersonForm
